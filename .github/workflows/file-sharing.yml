@@ -46,11 +46,13 @@ jobs:
                   TOKEN: ${{ secrets.TUNNEL_TOKEN }}
               if: ${{ env.TOKEN != '' }}
               run: |
-                  sudo cloudflared service install ${{ secrets.TUNNEL_TOKEN }} & sleep 5
+                  sudo cloudflared service install ${{ secrets.TUNNEL_TOKEN }} &
 
             - name: Start Server
               env:
                   DIR: ${{ inputs.dir }}
                   PERMISSIONS: ${{ secrets.PERMISSIONS }}
               run: |
-                  timeout ${{ github.event.inputs.duration }} pnpm run start
+                  date 
+                  timeout ${{ github.event.inputs.duration }} pnpm run start || true
+                  date
