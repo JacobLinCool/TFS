@@ -1,0 +1,49 @@
+name: Temp File Sharing
+
+on:
+    workflow_dispatch:
+        inputs:
+            dir:
+                description: The base directory to share
+                required: false
+                default: ".store"
+
+jobs:
+    serve:
+        runs-on: ubuntu-latest
+        timeout-minutes: 120
+        steps:
+            - name: Checkout
+              uses: actions/checkout@v3
+
+            - name: Setup PNPM
+              uses: pnpm/action-setup@v2.2.2
+              with:
+                  version: latest
+                  run_install: true
+
+            - name: Build
+              run: pnpm build
+
+            - name: Install Cloudflared
+              run: |
+                  curl -L --output cloudflared.deb https://github.com/cloudflare/cloudflared/releases/latest/download/cloudflared-linux-amd64.deb
+                  sudo dpkg -i cloudflared.deb
+
+            - name: Start Server (Anonymous)
+              env:
+                  DIR: ${{ inputs.dir }}
+                  TOKEN: ${{ secrets.TUNNEL_TOKEN }}
+              if: ${{ env.TOKEN == '' }}
+              run: |
+                  sudo cloudflared tunnel --url http://localhost:3000 &
+                  pnpm run start
+
+            - name: Start Server (Authenticated)
+              env:
+                  DIR: ${{ inputs.dir }}
+                  TOKEN: ${{ secrets.TUNNEL_TOKEN }}
+              if: ${{ env.TOKEN != '' }}
+              run: |
+                  sudo cloudflared service install ${{ secrets.TUNNEL_TOKEN }} &
+                  pnpm run start
