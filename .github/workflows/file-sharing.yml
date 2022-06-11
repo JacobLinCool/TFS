@@ -8,7 +8,7 @@ on:
                 required: false
                 default: ".store"
             duration:
-                description: The duration of the service to run. A float with an optional suffix, 's' for seconds (default), 'm' for minutes, 'h' for hours.
+                description: The duration of the service to run. Number with optional suffix, 's' (default), 'm', 'h'.
                 required: true
                 default: "120m"
 
