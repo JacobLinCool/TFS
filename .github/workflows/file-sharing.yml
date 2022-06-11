@@ -39,14 +39,14 @@ jobs:
                   TOKEN: ${{ secrets.TUNNEL_TOKEN }}
               if: ${{ env.TOKEN == '' }}
               run: |
-                  sudo cloudflared tunnel --url http://localhost:3000 &
+                  sudo cloudflared tunnel --url http://localhost:3000 & sleep 5
 
             - name: Start Tunnel (Authenticated)
               env:
                   TOKEN: ${{ secrets.TUNNEL_TOKEN }}
               if: ${{ env.TOKEN != '' }}
               run: |
-                  sudo cloudflared service install ${{ secrets.TUNNEL_TOKEN }} &
+                  sudo cloudflared service install ${{ secrets.TUNNEL_TOKEN }} & sleep 5
 
             - name: Start Server
               env:
